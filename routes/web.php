@@ -19,6 +19,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('fitness-goals', [FitnessGoalController::class, 'edit'])->name('fitness-goals.edit');
     Route::put('fitness-goals', [FitnessGoalController::class, 'update'])->name('fitness-goals.update');
 
+    Route::get('workouts', [WorkoutSessionController::class, 'index'])->name('workouts.index');
+    Route::get('workouts/create', [WorkoutSessionController::class, 'create'])->name('workouts.create');
+    Route::post('workouts', [WorkoutSessionController::class, 'store'])->name('workouts.store');
+    Route::delete('workouts/{workout}', [WorkoutSessionController::class, 'destroy'])->whereNumber('workout')->name('workouts.destroy');
+
     Route::get('metrics', [DailyMetricController::class, 'index'])->name('metrics.index');
     Route::get('metrics/create', [DailyMetricController::class, 'create'])->name('metrics.create');
     Route::post('metrics', [DailyMetricController::class, 'store'])->name('metrics.store');
