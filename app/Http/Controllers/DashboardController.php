@@ -44,12 +44,19 @@ class DashboardController extends Controller
 
         $totalEntries = $user->dailyMetrics()->count();
 
-        $entriesThisWeek = $user->dailyMetrics()
-            ->whereBetween('recorded_on', [
-                now()->startOfWeek()->toDateString(),
-                now()->endOfWeek()->toDateString(),
-            ])
-            ->count();
+        $weekStart = now()->startOfWeek()->toDateString();
+        $weekEnd = now()->endOfWeek()->toDateString();
+
+        $weeklyMetrics = $user->dailyMetrics()
+            ->whereBetween('recorded_on', [$weekStart, $weekEnd]);
+
+        $entriesThisWeek = (clone $weeklyMetrics)->count();
+        $weeklyAverages = [
+            'calories' => (clone $weeklyMetrics)->whereNotNull('calories')->avg('calories'),
+            'protein' => (clone $weeklyMetrics)->whereNotNull('protein_g')->avg('protein_g'),
+            'sleep' => (clone $weeklyMetrics)->whereNotNull('sleep_hours')->avg('sleep_hours'),
+        ];
+        $weeklyLoggingRate = (int) round(($entriesThisWeek / 7) * 100);
 
         $weightHistory = $user->dailyMetrics()
             ->whereNotNull('weight_kg')
@@ -93,6 +100,8 @@ class DashboardController extends Controller
             'weightChange' => $weightChange,
             'totalEntries' => $totalEntries,
             'entriesThisWeek' => $entriesThisWeek,
+            'weeklyAverages' => $weeklyAverages,
+            'weeklyLoggingRate' => $weeklyLoggingRate,
             'weightHistory' => $weightHistory,
             'weightChartPoints' => $weightChartPoints,
         ]);
