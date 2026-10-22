@@ -26,10 +26,15 @@ test('authenticated users can create a daily metric', function () {
     $this->assertDatabaseHas('daily_metrics', [
         'user_id' => $user->id,
         'recorded_on' => $recordedOn,
-        'weight_kg' => '68.80',
         'calories' => 2450,
         'notes' => 'Latihan upper body.',
     ]);
+
+    $metric = $user->dailyMetrics()
+        ->whereDate('recorded_on', $recordedOn)
+        ->firstOrFail();
+
+    expect($metric->weight_kg)->toBe('68.80');
 });
 
 test('users only see their own daily metrics', function () {

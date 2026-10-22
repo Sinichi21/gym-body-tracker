@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DailyMetric;
 use App\Models\User;
+use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -152,12 +153,22 @@ class DailyMetricController extends Controller
      */
     private function rules(User $user, ?DailyMetric $metric = null): array
     {
-        $recordedOnRule = Rule::unique('daily_metrics', 'recorded_on')
-            ->where(fn ($query) => $query->where('user_id', $user->id));
+        $recordedOnRule = function (string $attribute, mixed $value, Closure $fail) use ($user, $metric): void {
+            if (! is_string($value) || $value === '') {
+                return;
+            }
 
-        if ($metric !== null) {
-            $recordedOnRule->ignore($metric->id);
-        }
+            $query = $user->dailyMetrics()
+                ->whereDate('recorded_on', $value);
+
+            if ($metric !== null) {
+                $query->where('id', '!=', $metric->id);
+            }
+
+            if ($query->exists()) {
+                $fail('Catatan untuk tanggal ini sudah ada. Silakan edit catatan yang tersimpan.');
+            }
+        };
 
         return [
             'recorded_on' => ['required', 'date', 'before_or_equal:today', $recordedOnRule],
