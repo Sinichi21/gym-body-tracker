@@ -135,3 +135,52 @@ test('daily metric validation rejects impossible values', function () {
         'energy_score',
     ]);
 });
+test('users can filter their daily metrics by date range and note text', function () {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+
+    $olderMetric = $user->dailyMetrics()->create([
+        'recorded_on' => now()->subDays(5)->toDateString(),
+        'weight_kg' => '69.50',
+        'notes' => 'latihan kaki lama',
+    ]);
+
+    $matchingMetric = $user->dailyMetrics()->create([
+        'recorded_on' => now()->subDays(2)->toDateString(),
+        'weight_kg' => '69.20',
+        'notes' => 'latihan upper body',
+    ]);
+
+    $otherUser->dailyMetrics()->create([
+        'recorded_on' => now()->subDays(2)->toDateString(),
+        'weight_kg' => '99.90',
+        'notes' => 'latihan upper rahasia',
+    ]);
+
+    $response = $this->actingAs($user)->get(route('metrics.index', [
+        'from' => now()->subDays(3)->toDateString(),
+        'to' => now()->toDateString(),
+        'q' => 'upper',
+    ]));
+
+    $response
+        ->assertOk()
+        ->assertSee('latihan upper body')
+        ->assertDontSee('latihan kaki lama')
+        ->assertDontSee('latihan upper rahasia')
+        ->assertSee('value="upper"', false);
+
+    expect($matchingMetric->exists)->toBeTrue()
+        ->and($olderMetric->exists)->toBeTrue();
+});
+
+test('date filters reject an end date earlier than the start date', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->get(route('metrics.index', [
+        'from' => now()->toDateString(),
+        'to' => now()->subDay()->toDateString(),
+    ]));
+
+    $response->assertSessionHasErrors('to');
+});

@@ -15,7 +15,31 @@ class DailyMetricController extends Controller
     {
         $user = $this->currentUser($request);
 
-        $metrics = $user->dailyMetrics()
+        $filters = $request->validate([
+            'from' => ['nullable', 'date', 'before_or_equal:today'],
+            'to' => ['nullable', 'date', 'before_or_equal:today', Rule::when($request->filled('from'), ['after_or_equal:from'])],
+            'q' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $from = $filters['from'] ?? null;
+        $to = $filters['to'] ?? null;
+        $search = trim((string) ($filters['q'] ?? ''));
+
+        $metricsQuery = $user->dailyMetrics();
+
+        if (is_string($from) && $from !== '') {
+            $metricsQuery->whereDate('recorded_on', '>=', $from);
+        }
+
+        if (is_string($to) && $to !== '') {
+            $metricsQuery->whereDate('recorded_on', '<=', $to);
+        }
+
+        if ($search !== '') {
+            $metricsQuery->where('notes', 'like', '%'.$search.'%');
+        }
+
+        $metrics = $metricsQuery
             ->orderByDesc('recorded_on')
             ->paginate(12)
             ->withQueryString();
@@ -53,6 +77,11 @@ class DailyMetricController extends Controller
             'latestWeightMetric' => $latestWeightMetric,
             'latestWaistMetric' => $latestWaistMetric,
             'weightChange' => $weightChange,
+            'filters' => [
+                'from' => is_string($from) ? $from : '',
+                'to' => is_string($to) ? $to : '',
+                'q' => $search,
+            ],
         ]);
     }
 
