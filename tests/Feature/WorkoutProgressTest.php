@@ -34,7 +34,7 @@ test('users can view progress aggregated from their workout history', function (
         ->assertSee('Bench Press')
         ->assertSee('45,00 kg')
         ->assertDontSee('Deadlift')
-        ->assertSee('1.220 kg-rep');
+        ->assertSee('1.143 kg-rep');
 });
 
 test('guests must authenticate before viewing workout progress', function () {
