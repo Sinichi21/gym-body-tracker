@@ -15,7 +15,6 @@ test('authenticated users can visit the dashboard', function () {
     $response->assertOk();
 });
 
-
 test('dashboard shows weekly averages and logging consistency from the current user data', function () {
     $user = User::factory()->create();
 
