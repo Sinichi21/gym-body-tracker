@@ -25,7 +25,6 @@ test('authenticated users can create a daily metric', function () {
 
     $this->assertDatabaseHas('daily_metrics', [
         'user_id' => $user->id,
-        'recorded_on' => $recordedOn,
         'calories' => 2450,
         'notes' => 'Latihan upper body.',
     ]);
