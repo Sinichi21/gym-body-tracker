@@ -18,7 +18,7 @@
                     <flux:sidebar.item icon="chart-bar" :href="route('metrics.index')" :current="request()->routeIs('metrics.*')" wire:navigate>
                         {{ __('Data tubuh') }}
                     </flux:sidebar.item>
-                    <flux:sidebar.item icon="target" :href="route('fitness-goals.edit')" :current="request()->routeIs('fitness-goals.*')" wire:navigate>
+                    <flux:sidebar.item icon="chart-bar" :href="route('fitness-goals.edit')" :current="request()->routeIs('fitness-goals.*')" wire:navigate>
                         {{ __('Target kebugaran') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
