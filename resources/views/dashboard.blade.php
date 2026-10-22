@@ -62,6 +62,43 @@
             </article>
         </section>
 
+        <section class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 sm:p-6">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-zinc-900 dark:text-white">Konsistensi dan rata-rata minggu ini</h2>
+                    <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Dihitung dari catatan yang kamu simpan pada minggu berjalan.</p>
+                </div>
+                <a href="{{ route('metrics.create') }}" class="text-sm font-semibold text-lime-600 hover:text-lime-500 dark:text-lime-300">Tambah catatan →</a>
+            </div>
+            <div class="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <article class="rounded-xl bg-zinc-50 p-4 dark:bg-zinc-950/60">
+                    <div class="flex items-center justify-between gap-3">
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400">Konsistensi pencatatan</p>
+                        <span class="text-sm font-semibold text-lime-600 dark:text-lime-300">{{ $weeklyLoggingRate }}%</span>
+                    </div>
+                    <div class="mt-3 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+                        <div class="h-full rounded-full bg-lime-400 transition-all" style="width: {{ $weeklyLoggingRate }}%"></div>
+                    </div>
+                    <p class="mt-2 text-xs text-zinc-500 dark:text-zinc-400">{{ $entriesThisWeek }} dari 7 hari tercatat</p>
+                </article>
+                <article class="rounded-xl bg-zinc-50 p-4 dark:bg-zinc-950/60">
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">Rata-rata kalori</p>
+                    <p class="mt-3 text-2xl font-semibold text-zinc-900 dark:text-white">{{ $weeklyAverages['calories'] !== null ? number_format((float) $weeklyAverages['calories'], 0, ',', '.') : '—' }} <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">kkal</span></p>
+                    <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Dari hari dengan data kalori.</p>
+                </article>
+                <article class="rounded-xl bg-zinc-50 p-4 dark:bg-zinc-950/60">
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">Rata-rata protein</p>
+                    <p class="mt-3 text-2xl font-semibold text-zinc-900 dark:text-white">{{ $weeklyAverages['protein'] !== null ? number_format((float) $weeklyAverages['protein'], 1, ',', '.') : '—' }} <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">g</span></p>
+                    <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Dari hari dengan data protein.</p>
+                </article>
+                <article class="rounded-xl bg-zinc-50 p-4 dark:bg-zinc-950/60">
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">Rata-rata tidur</p>
+                    <p class="mt-3 text-2xl font-semibold text-zinc-900 dark:text-white">{{ $weeklyAverages['sleep'] !== null ? number_format((float) $weeklyAverages['sleep'], 1, ',', '.') : '—' }} <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">jam</span></p>
+                    <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Dari hari dengan data tidur.</p>
+                </article>
+            </div>
+        </section>
+
         <section class="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(300px,1fr)]">
             <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 sm:p-6">
                 <div class="flex flex-wrap items-start justify-between gap-3">
