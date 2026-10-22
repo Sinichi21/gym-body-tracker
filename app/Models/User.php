@@ -73,6 +73,16 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     }
 
     /**
+     * Workout sessions belonging to this user.
+     *
+     * @return HasMany<WorkoutSession, $this>
+     */
+    public function workoutSessions(): HasMany
+    {
+        return $this->hasMany(WorkoutSession::class);
+    }
+
+    /**
      * Get the user's initials
      */
     public function initials(): string
