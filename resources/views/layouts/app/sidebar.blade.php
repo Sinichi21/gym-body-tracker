@@ -21,6 +21,9 @@
                     <flux:sidebar.item icon="chart-bar" :href="route('workouts.index')" :current="request()->routeIs('workouts.*')" wire:navigate>
                         {{ __('Latihan') }}
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="calendar-days" :href="route('workouts.calendar')" :current="request()->routeIs('workouts.calendar')" wire:navigate>
+                        {{ __('Kalender latihan') }}
+                    </flux:sidebar.item>
                     <flux:sidebar.item icon="chart-bar" :href="route('workouts.progress')" :current="request()->routeIs('workouts.progress')" wire:navigate>
                         {{ __('Progres latihan') }}
                     </flux:sidebar.item>
