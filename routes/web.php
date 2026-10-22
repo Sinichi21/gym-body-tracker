@@ -4,6 +4,7 @@ use App\Http\Controllers\DailyMetricController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FitnessGoalController;
 use App\Http\Controllers\WorkoutSessionController;
+use App\Http\Controllers\WorkoutProgressController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,6 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('fitness-goals', [FitnessGoalController::class, 'edit'])->name('fitness-goals.edit');
     Route::put('fitness-goals', [FitnessGoalController::class, 'update'])->name('fitness-goals.update');
 
+    Route::get('workouts/progress', WorkoutProgressController::class)->name('workouts.progress');
     Route::get('workouts', [WorkoutSessionController::class, 'index'])->name('workouts.index');
     Route::get('workouts/create', [WorkoutSessionController::class, 'create'])->name('workouts.create');
     Route::post('workouts', [WorkoutSessionController::class, 'store'])->name('workouts.store');
