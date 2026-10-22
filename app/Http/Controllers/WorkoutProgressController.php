@@ -54,6 +54,7 @@ class WorkoutProgressController extends Controller
                         $performance['volume_kg'] += $weight * $reps;
 
                         if ($performance['latest_weight'] === null) {
+                            $performance['latest_date'] = $session->trained_on;
                             $performance['latest_weight'] = $weight;
                             $performance['latest_reps'] = $reps;
                         }
