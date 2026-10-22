@@ -67,20 +67,22 @@ class DashboardController extends Controller
                 ->map(fn ($weight): float => (float) $weight)
                 ->all();
 
-            $minWeight = min($weights);
-            $maxWeight = max($weights);
-            $weightRange = max($maxWeight - $minWeight, 1.0);
-            $pointCount = count($weights);
+            if ($weights !== []) {
+                $minWeight = min($weights);
+                $maxWeight = max($weights);
+                $weightRange = max($maxWeight - $minWeight, 1.0);
+                $pointCount = count($weights);
 
-            $weightChartPoints = $weightHistory
-                ->values()
-                ->map(function (DailyMetric $metric, int $index) use ($minWeight, $weightRange, $pointCount): string {
-                    $x = $pointCount === 1 ? 300 : ($index / ($pointCount - 1)) * 600;
-                    $y = 78 - (((float) $metric->weight_kg - $minWeight) / $weightRange) * 56;
+                $weightChartPoints = $weightHistory
+                    ->values()
+                    ->map(function (DailyMetric $metric, int $index) use ($minWeight, $weightRange, $pointCount): string {
+                        $x = $pointCount === 1 ? 300 : ($index / ($pointCount - 1)) * 600;
+                        $y = 78 - (((float) $metric->weight_kg - $minWeight) / $weightRange) * 56;
 
-                    return sprintf('%.2f,%.2f', $x, $y);
-                })
-                ->implode(' ');
+                        return sprintf('%.2f,%.2f', $x, $y);
+                    })
+                    ->implode(' ');
+            }
         }
 
         return view('dashboard', [
