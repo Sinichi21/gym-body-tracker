@@ -135,6 +135,7 @@ test('daily metric validation rejects impossible values', function () {
         'energy_score',
     ]);
 });
+
 test('users can filter their daily metrics by date range and note text', function () {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
