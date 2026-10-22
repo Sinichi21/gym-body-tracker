@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DailyMetricController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FitnessGoalController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,6 +15,9 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+    Route::get('fitness-goals', [FitnessGoalController::class, 'edit'])->name('fitness-goals.edit');
+    Route::put('fitness-goals', [FitnessGoalController::class, 'update'])->name('fitness-goals.update');
 
     Route::get('metrics', [DailyMetricController::class, 'index'])->name('metrics.index');
     Route::get('metrics/create', [DailyMetricController::class, 'create'])->name('metrics.create');
