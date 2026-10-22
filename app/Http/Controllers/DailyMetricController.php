@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\DailyMetric;
 use App\Models\User;
+use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class DailyMetricController extends Controller
 {
@@ -15,7 +15,37 @@ class DailyMetricController extends Controller
     {
         $user = $this->currentUser($request);
 
-        $metrics = $user->dailyMetrics()
+        $toRules = ['nullable', 'date', 'before_or_equal:today'];
+
+        if ($request->filled('from')) {
+            $toRules[] = 'after_or_equal:from';
+        }
+
+        $filters = $request->validate([
+            'from' => ['nullable', 'date', 'before_or_equal:today'],
+            'to' => $toRules,
+            'q' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $from = $filters['from'] ?? null;
+        $to = $filters['to'] ?? null;
+        $search = trim((string) ($filters['q'] ?? ''));
+
+        $metricsQuery = $user->dailyMetrics();
+
+        if (is_string($from) && $from !== '') {
+            $metricsQuery->whereDate('recorded_on', '>=', $from);
+        }
+
+        if (is_string($to) && $to !== '') {
+            $metricsQuery->whereDate('recorded_on', '<=', $to);
+        }
+
+        if ($search !== '') {
+            $metricsQuery->where('notes', 'like', '%'.$search.'%');
+        }
+
+        $metrics = $metricsQuery
             ->orderByDesc('recorded_on')
             ->paginate(12)
             ->withQueryString();
@@ -53,6 +83,11 @@ class DailyMetricController extends Controller
             'latestWeightMetric' => $latestWeightMetric,
             'latestWaistMetric' => $latestWaistMetric,
             'weightChange' => $weightChange,
+            'filters' => [
+                'from' => is_string($from) ? $from : '',
+                'to' => is_string($to) ? $to : '',
+                'q' => $search,
+            ],
         ]);
     }
 
@@ -123,12 +158,22 @@ class DailyMetricController extends Controller
      */
     private function rules(User $user, ?DailyMetric $metric = null): array
     {
-        $recordedOnRule = Rule::unique('daily_metrics', 'recorded_on')
-            ->where(fn ($query) => $query->where('user_id', $user->id));
+        $recordedOnRule = function (string $attribute, mixed $value, Closure $fail) use ($user, $metric): void {
+            if (! is_string($value) || $value === '') {
+                return;
+            }
 
-        if ($metric !== null) {
-            $recordedOnRule->ignore($metric->id);
-        }
+            $query = $user->dailyMetrics()
+                ->whereDate('recorded_on', $value);
+
+            if ($metric !== null) {
+                $query->where('id', '!=', $metric->id);
+            }
+
+            if ($query->exists()) {
+                $fail('Catatan untuk tanggal ini sudah ada. Silakan edit catatan yang tersimpan.');
+            }
+        };
 
         return [
             'recorded_on' => ['required', 'date', 'before_or_equal:today', $recordedOnRule],

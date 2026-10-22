@@ -25,11 +25,15 @@ test('authenticated users can create a daily metric', function () {
 
     $this->assertDatabaseHas('daily_metrics', [
         'user_id' => $user->id,
-        'recorded_on' => $recordedOn,
-        'weight_kg' => '68.80',
         'calories' => 2450,
         'notes' => 'Latihan upper body.',
     ]);
+
+    $metric = $user->dailyMetrics()
+        ->whereDate('recorded_on', $recordedOn)
+        ->firstOrFail();
+
+    expect($metric->weight_kg)->toBe('68.80');
 });
 
 test('users only see their own daily metrics', function () {
@@ -134,4 +138,54 @@ test('daily metric validation rejects impossible values', function () {
         'sleep_hours',
         'energy_score',
     ]);
+});
+
+test('users can filter their daily metrics by date range and note text', function () {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+
+    $olderMetric = $user->dailyMetrics()->create([
+        'recorded_on' => now()->subDays(5)->toDateString(),
+        'weight_kg' => '69.50',
+        'notes' => 'latihan kaki lama',
+    ]);
+
+    $matchingMetric = $user->dailyMetrics()->create([
+        'recorded_on' => now()->subDays(2)->toDateString(),
+        'weight_kg' => '69.20',
+        'notes' => 'latihan upper body',
+    ]);
+
+    $otherUser->dailyMetrics()->create([
+        'recorded_on' => now()->subDays(2)->toDateString(),
+        'weight_kg' => '99.90',
+        'notes' => 'latihan upper rahasia',
+    ]);
+
+    $response = $this->actingAs($user)->get(route('metrics.index', [
+        'from' => now()->subDays(3)->toDateString(),
+        'to' => now()->toDateString(),
+        'q' => 'upper',
+    ]));
+
+    $response
+        ->assertOk()
+        ->assertSee('latihan upper body')
+        ->assertDontSee('latihan kaki lama')
+        ->assertDontSee('latihan upper rahasia')
+        ->assertSee('value="upper"', false);
+
+    expect($matchingMetric->exists)->toBeTrue()
+        ->and($olderMetric->exists)->toBeTrue();
+});
+
+test('date filters reject an end date earlier than the start date', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->get(route('metrics.index', [
+        'from' => now()->toDateString(),
+        'to' => now()->subDay()->toDateString(),
+    ]));
+
+    $response->assertSessionHasErrors('to');
 });
