@@ -3,6 +3,7 @@
 use App\Http\Controllers\DailyMetricController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FitnessGoalController;
+use App\Http\Controllers\WorkoutSessionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
