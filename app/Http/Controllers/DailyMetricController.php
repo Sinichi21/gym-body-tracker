@@ -15,9 +15,15 @@ class DailyMetricController extends Controller
     {
         $user = $this->currentUser($request);
 
+        $toRules = ['nullable', 'date', 'before_or_equal:today'];
+
+        if ($request->filled('from')) {
+            $toRules[] = 'after_or_equal:from';
+        }
+
         $filters = $request->validate([
             'from' => ['nullable', 'date', 'before_or_equal:today'],
-            'to' => ['nullable', 'date', 'before_or_equal:today', Rule::when($request->filled('from'), ['after_or_equal:from'])],
+            'to' => $toRules,
             'q' => ['nullable', 'string', 'max:100'],
         ]);
 
