@@ -93,6 +93,7 @@ class DashboardController extends Controller
         }
 
         return view('dashboard', [
+            'fitnessGoal' => $user->fitnessGoal,
             'recentMetrics' => $recentMetrics,
             'latestMetric' => $latestMetric,
             'latestWeightMetric' => $latestWeightMetric,

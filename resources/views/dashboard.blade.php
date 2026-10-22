@@ -21,6 +21,44 @@
             </div>
         @endif
 
+        <section class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 sm:p-6">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-zinc-900 dark:text-white">Target pribadi</h2>
+                    <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                        @if ($fitnessGoal)
+                            {{ ['lean_bulk' => 'Lean bulk', 'fat_loss' => 'Fat loss', 'maintenance' => 'Maintenance'][$fitnessGoal->goal_type] ?? 'Target pribadi' }} · progres dibandingkan dengan catatan terbaru.
+                        @else
+                            Atur target kalori, protein, tidur, dan berat badan agar progres lebih terarah.
+                        @endif
+                    </p>
+                </div>
+                <a href="{{ route('fitness-goals.edit') }}" class="inline-flex items-center justify-center rounded-xl border border-zinc-300 px-3 py-2 text-sm font-semibold text-zinc-800 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800">{{ $fitnessGoal ? 'Ubah target' : 'Atur target' }}</a>
+            </div>
+            @if ($fitnessGoal)
+                <div class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    @foreach ([
+                        ['label' => 'Berat badan', 'actual' => $latestWeightMetric?->weight_kg, 'target' => $fitnessGoal->target_weight_kg, 'unit' => 'kg', 'decimals' => 2],
+                        ['label' => 'Kalori hari terakhir', 'actual' => $latestMetric?->calories, 'target' => $fitnessGoal->daily_calories, 'unit' => 'kkal', 'decimals' => 0],
+                        ['label' => 'Protein hari terakhir', 'actual' => $latestMetric?->protein_g, 'target' => $fitnessGoal->daily_protein_g, 'unit' => 'g', 'decimals' => 1],
+                        ['label' => 'Tidur hari terakhir', 'actual' => $latestMetric?->sleep_hours, 'target' => $fitnessGoal->daily_sleep_hours, 'unit' => 'jam', 'decimals' => 1],
+                    ] as $goalMetric)
+                        <article class="rounded-xl bg-zinc-50 p-4 dark:bg-zinc-950/60">
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $goalMetric['label'] }}</p>
+                            <p class="mt-2 text-xl font-semibold text-zinc-900 dark:text-white">
+                                {{ $goalMetric['actual'] !== null ? number_format((float) $goalMetric['actual'], $goalMetric['decimals'], ',', '.') : '—' }}
+                                <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ $goalMetric['unit'] }}</span>
+                            </p>
+                            <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                                Target: {{ $goalMetric['target'] !== null ? number_format((float) $goalMetric['target'], $goalMetric['decimals'], ',', '.') . ' ' . $goalMetric['unit'] : 'belum diatur' }}
+                            </p>
+                        </article>
+                    @endforeach
+                </div>
+                <p class="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Nilai aktual berasal dari catatan terakhir yang tersedia, bukan otomatis dianggap sebagai data hari ini.</p>
+            @endif
+        </section>
+
         <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <article class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
                 <p class="text-sm text-zinc-500 dark:text-zinc-400">Berat badan terakhir</p>
