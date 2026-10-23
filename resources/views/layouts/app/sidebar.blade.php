@@ -18,6 +18,9 @@
                     <flux:sidebar.item icon="chart-bar" :href="route('metrics.index')" :current="request()->routeIs('metrics.*')" wire:navigate>
                         {{ __('Data tubuh') }}
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="books" :href="route('library.index')" :current="request()->routeIs('library.*')" wire:navigate>
+                        {{ __('Library') }}
+                    </flux:sidebar.item>
                     <flux:sidebar.item icon="chart-bar" :href="route('workouts.index')" :current="request()->routeIs('workouts.*')" wire:navigate>
                         {{ __('Latihan') }}
                     </flux:sidebar.item>

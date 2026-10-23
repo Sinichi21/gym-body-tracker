@@ -17,6 +17,16 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
+    Route::get('library', [LibraryController::class, 'index'])->name('library.index');
+    Route::post('library/programs', [LibraryController::class, 'storeProgram'])->name('library.programs.store');
+    Route::delete('library/programs/{program}', [LibraryController::class, 'destroyProgram'])->name('library.programs.destroy');
+    Route::post('library/programs/{program}/routines', [LibraryController::class, 'attachRoutine'])->name('library.programs.routines.store');
+    Route::post('library/routines', [LibraryController::class, 'storeRoutine'])->name('library.routines.store');
+    Route::delete('library/routines/{routine}', [LibraryController::class, 'destroyRoutine'])->name('library.routines.destroy');
+    Route::post('library/routines/{routine}/exercises', [LibraryController::class, 'attachExercise'])->name('library.routines.exercises.store');
+    Route::delete('library/exercises/{exercise}', [LibraryController::class, 'destroyExercise'])->name('library.exercises.destroy');
+    Route::post('library/exercises', [LibraryController::class, 'storeExercise'])->name('library.exercises.store');
+
     Route::get('fitness-goals', [FitnessGoalController::class, 'edit'])->name('fitness-goals.edit');
     Route::put('fitness-goals', [FitnessGoalController::class, 'update'])->name('fitness-goals.update');
 
